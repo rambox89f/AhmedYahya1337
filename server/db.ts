@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, images, InsertImage } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -85,4 +85,41 @@ export async function getUser(id: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function createImage(image: InsertImage) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const result = await db.insert(images).values(image);
+  return result;
+}
+
+export async function getUserImages(userId: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const result = await db.select().from(images).where(eq(images.userId, userId)).orderBy(desc(images.createdAt));
+  return result;
+}
+
+export async function getImage(id: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const result = await db.select().from(images).where(eq(images.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateImageStatus(id: string, status: "pending" | "completed" | "failed", errorMessage?: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const updateData: Record<string, unknown> = { status, updatedAt: new Date() };
+  if (errorMessage) {
+    updateData.errorMessage = errorMessage;
+  }
+  return db.update(images).set(updateData).where(eq(images.id, id));
+}
