@@ -16,6 +16,7 @@ export default function Home() {
   const [editPrompt, setEditPrompt] = useState("");
   const [editImageUrl, setEditImageUrl] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageForEdit, setSelectedImageForEdit] = useState<string | null>(null);
 
   const generateMutation = trpc.images.generate.useMutation();
   const editMutation = trpc.images.edit.useMutation();
@@ -35,7 +36,7 @@ export default function Home() {
       });
       setGeneratePrompt("");
       toast.success("Image generated successfully!");
-      listQuery.refetch();
+      await listQuery.refetch();
     } catch (error) {
       toast.error("Failed to generate image");
     }
@@ -58,6 +59,7 @@ export default function Home() {
       });
       setEditImageUrl("");
       setEditPrompt("");
+      setSelectedImageForEdit(null);
       toast.success("Image edited successfully!");
       listQuery.refetch();
     } catch (error) {
@@ -156,22 +158,42 @@ export default function Home() {
                   <CardHeader>
                     <CardTitle className="text-white">Edit Image</CardTitle>
                     <CardDescription className="text-gray-400">
-                      Modify an existing image
+                      Select an image from your studio
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
                       <label className="text-sm font-medium text-white mb-2 block">
-                        Image URL
+                        Select Image
                       </label>
-                      <Input
-                        type="url"
-                        placeholder="https://example.com/image.jpg"
-                        value={editImageUrl}
-                        onChange={(e) => setEditImageUrl(e.target.value)}
-                        className="bg-slate-700 border-slate-600 text-white placeholder:text-gray-500"
-                        disabled={editMutation.isPending}
-                      />
+                      {listQuery.data && listQuery.data.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto bg-slate-700 p-2 rounded">
+                          {listQuery.data.map((image) => (
+                            <div
+                              key={image.id}
+                              onClick={() => {
+                                setSelectedImageForEdit(image.imageUrl);
+                                setEditImageUrl(image.imageUrl);
+                              }}
+                              className={`cursor-pointer rounded overflow-hidden border-2 transition ${
+                                selectedImageForEdit === image.imageUrl
+                                  ? "border-purple-500"
+                                  : "border-slate-600 hover:border-purple-400"
+                              }`}
+                            >
+                              <img
+                                src={image.imageUrl}
+                                alt="Select"
+                                className="w-full h-16 object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-gray-400 text-sm p-4 bg-slate-700 rounded text-center">
+                          No images yet. Create one first!
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-sm font-medium text-white mb-2 block">
