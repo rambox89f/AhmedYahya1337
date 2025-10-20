@@ -76,28 +76,8 @@ export default function Home() {
     document.body.removeChild(a);
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-        <div className="text-center max-w-2xl">
-          <div className="mb-8">
-            {APP_LOGO && <img src={APP_LOGO} alt="Logo" className="h-16 mx-auto mb-4" />}
-            <h1 className="text-5xl font-bold text-white mb-4">{APP_TITLE}</h1>
-            <p className="text-xl text-gray-300 mb-8">
-              Create stunning images with AI. Generate new images or edit existing ones with simple text prompts.
-            </p>
-          </div>
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-6 text-lg"
-            onClick={() => (window.location.href = getLoginUrl())}
-          >
-            Sign In to Get Started
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // Always show the main interface - no login required
+  const displayName = user?.name || "Guest";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
@@ -110,7 +90,7 @@ export default function Home() {
               <h1 className="text-3xl font-bold text-white">{APP_TITLE}</h1>
             </div>
             <div className="text-white text-sm">
-              Welcome, <span className="font-semibold">{user?.name || "User"}</span>
+              Welcome, <span className="font-semibold">{displayName}</span>
             </div>
           </div>
           <p className="text-gray-300">Create and edit images with AI-powered tools</p>
