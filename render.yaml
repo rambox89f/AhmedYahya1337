@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: ahmedyahya1337-ai
+    runtime: node
+    plan: free
+    buildCommand: pnpm install && pnpm build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ahmedyahya1337-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: VITE_APP_ID
+        sync: false
+      - key: OAUTH_SERVER_URL
+        sync: false
+      - key: VITE_OAUTH_PORTAL_URL
+        sync: false
+      - key: OWNER_OPEN_ID
+        sync: false
+      - key: OWNER_NAME
+        sync: false
+      - key: VITE_APP_TITLE
+        value: AhmedYahya1337 AI Image Studio
+      - key: VITE_APP_LOGO
+        sync: false
+      - key: BUILT_IN_FORGE_API_URL
+        sync: false
+      - key: BUILT_IN_FORGE_API_KEY
+        sync: false
+      - key: VITE_ANALYTICS_ENDPOINT
+        sync: false
+      - key: VITE_ANALYTICS_WEBSITE_ID
+        sync: false
+
+databases:
+  - name: ahmedyahya1337-db
+    plan: free
+    databaseName: ahmedyahya1337
+    user: ahmedyahya1337
+
